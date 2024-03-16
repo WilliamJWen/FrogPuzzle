@@ -32,7 +32,7 @@ int main() {
    initialize_array(g_num_stones);
    //print_array();
    //print_game_state();
-   printf("This is a game in honor of frog!\n");
+   printf("This is a game in honor of Frog!\n");
    printf("You win by getting all LEFT to the right side, and vice versa\n");
    printf("You can only move foward or jump forward over one frog\n");
    printf("There are four levels of the game, you are now on level one with 5 stones!\n");
@@ -172,7 +172,7 @@ int make_move(int to_move, int move) {
    to_move -= 1;
    array[to_move + move] = array[to_move];
    array[to_move] = EMPTY;
-   printf("Made a move\n");
+   //printf("Made a move\n");
    return 1;
 }
 
