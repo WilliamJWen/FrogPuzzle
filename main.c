@@ -4848,7 +4848,8 @@ const unsigned short frog_dock[368] ={
 void plot_pixel(int x, int y, short int line_color);
 void clear_screen();
 void draw_background();
-void draw_frog_docks();
+void draw_frog_docks(int initial_x, int initial_y);
+void draw_frog_docks_level(int num_stone);
 
 int pixel_buffer_start;  // global variable
 
@@ -4881,7 +4882,7 @@ int main(void) {
 
   clear_screen();
   draw_background();
-  draw_frog_docks();
+  draw_frog_docks_level(7);
 	
   clear_array();
   initialize_array(g_num_stones);
@@ -5080,11 +5081,26 @@ void draw_background() {
   }
 }
 
-void draw_frog_docks() {
+void draw_frog_docks(int initial_x, int initial_y) {
   for (int y=15;y>=0;y--) {
     for (int x=0;x<23;x++) {
       if (frog_dock[x+y*23]==0x0000) continue;
-      plot_pixel(6+x, 180+y,frog_dock[x+y*23]);
+      plot_pixel(initial_x+x, initial_y+y,frog_dock[x+y*23]);
+    }
+  }
+}
+
+void draw_frog_docks_level(int num_stone){
+  int initial_x = 6;
+  int initial_y = 180;
+
+  for(int  i = 0; i < 11; i++){
+    if(num_stone == 5 && i > 2 && i < 8){
+      draw_frog_docks(initial_x + i*29, initial_y);
+    }else if(num_stone == 11){
+      draw_frog_docks(initial_x + i*29, initial_y);
+    }else if(num_stone == 7 && i > 1 && i < 9){
+      draw_frog_docks(initial_x + i*29, initial_y);
     }
   }
 }
