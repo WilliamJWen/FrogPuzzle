@@ -4,9 +4,9 @@ The Frog Jumping Puzzle is a strategic game where players must maneuver 6 frogs,
 # Develop Cycle
 * step 1: implement a terminal version of the frog puzzle with full functionality<br/>
   * a. extra feature: 4 levels(5, 7, 9, 11 stones)
-* step 2: draw background ✅ 
+* step 2: draw background  
 * step 3: draw 7 stones
-  * a. extra feature: calculate space that can fit 11 stones
+  * a. extra feature: calculate space that can fit 11 stones ✅
 * step 4: draw 6 frogs on stones
 * step 5: ps2-keyboard to teleport frogs
   * a. use a push button to control a frog to teleport
