@@ -4930,6 +4930,7 @@ const unsigned short right_frog[621] ={
 
 //***************** VGA Stuff *****************//
 
+void wait_for_vsync();
 void plot_pixel(int x, int y, short int line_color);
 void clear_screen();
 void draw_background();
@@ -4941,6 +4942,8 @@ void draw_empty_frog(int initial_x, int initial_y);
 void draw_frog(int i, int side);
 
 int pixel_buffer_start;  // global variable
+short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
+short int Buffer2[240][512];
 
 //***************** Game Logic *****************//
 //******* Named Constants *******//
@@ -4986,16 +4989,32 @@ int main(void) {
   //***** VGA *****//
   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;
   /* Read location of the pixel buffer from the pixel buffer controller */
-  pixel_buffer_start = *pixel_ctrl_ptr;
+  //pixel_buffer_start = *pixel_ctrl_ptr;
 
-  clear_screen();
+    /* set front pixel buffer to Buffer 1 */
+  *(pixel_ctrl_ptr + 1) = (int)&Buffer1;  // first store the address in the back buffer
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   draw_background();
+  *pixel_ctrl_ptr = 1;
+  wait_for_vsync();
+  
+  /* now, swap the front/back buffers, to set the front buffer location */
+  *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1); // we draw on the back buffer
+  draw_background();
+  *pixel_ctrl_ptr = 1;
+  wait_for_vsync();
 	
   clear_array();
   initialize_array(g_num_stones);
+
   while (1) {
     print_game_state();
     //int to_move = get_input();
+    *pixel_ctrl_ptr = 1;
+    wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+    
 	PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
         RVALID   = PS2_data & 0x8000; // extract the RVALID field
         if (RVALID) {
@@ -5159,6 +5178,7 @@ int make_move(int to_move, int move) {
   to_move -= 1;
   array[to_move + move] = array[to_move];
   array[to_move] = EMPTY;
+  	
   // printf("Made a move\n");
   return 1;
 }
@@ -5191,6 +5211,11 @@ bool check_lose() {
 }
 
 //***************** VGA Function Definition *****************//
+void wait_for_vsync() {
+  volatile int *status = (int *)0xFF20302C;
+  while ((*status & 1) != 0);
+}
+
 void plot_pixel(int x, int y, short int line_color) {
   volatile short int *one_pixel_address;
 
@@ -5203,7 +5228,7 @@ void plot_pixel(int x, int y, short int line_color) {
 void clear_screen() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
-      plot_pixel(x, y, 0x0000);
+      plot_pixel(x, y, 0x1111);
     }
   }
 }
@@ -5290,3 +5315,4 @@ int input_mux(char key_byte) {
 	
 	return 0; 
 };
+
