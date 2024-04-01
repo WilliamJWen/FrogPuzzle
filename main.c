@@ -4936,6 +4936,8 @@ void draw_background();
 void draw_frog_docks(int initial_x, int initial_y);
 void draw_frog_docks_level(int num_stone);
 void draw_left_frog(int initial_x, int initial_y);
+void draw_right_frog(int initial_x, int initial_y);
+void draw_empty_frog(int initial_x, int initial_y);
 void draw_frog(int i, int side);
 
 int pixel_buffer_start;  // global variable
@@ -4964,7 +4966,24 @@ int get_input();
 bool check_win();
 bool check_lose();
 
+// PS2 Keyboard Function Declaration//
+int input_mux(char key_byte);
+
 int main(void) {
+  	/* Declare volatile pointers to I/O registers (volatile means that IO load
+       and store instructions will be used to access these pointer locations,
+       instead of regular memory loads and stores) */
+    //volatile int * PS2_ptr = (int *)PS2_BASE;
+	volatile int * PS2_ptr = (int *) 0xFF200100;  // PS/2 port address
+
+    int  PS2_data, RVALID;
+    char byte1 = 0, byte2 = 0, byte3 = 0;
+
+    // PS/2 mouse needs to be reset (must be already plugged in)
+    *(PS2_ptr) = 0xFF; // reset
+	
+	
+  //***** VGA *****//
   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;
   /* Read location of the pixel buffer from the pixel buffer controller */
   pixel_buffer_start = *pixel_ctrl_ptr;
@@ -4976,7 +4995,24 @@ int main(void) {
   initialize_array(g_num_stones);
   while (1) {
     print_game_state();
-    int to_move = get_input();
+    //int to_move = get_input();
+	PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+        RVALID   = PS2_data & 0x8000; // extract the RVALID field
+        if (RVALID) {
+            /* shift the next data byte into the display */
+            byte1 = byte2;
+            byte2 = byte3;
+            byte3 = PS2_data & 0xFF;
+
+            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+                // mouse inserted; initialize sending of data
+                *(PS2_ptr) = 0xF4;
+        }
+	int to_move = input_mux(byte3);
+	byte1 = 0x00;
+	byte2 = 0x00;
+	byte3 = 0x00;
+	  
     printf("You haved selected %d\n", to_move);
     if (to_move == -1) {  // mistake restart the game
       initialize_array(g_num_stones);
@@ -4997,6 +5033,9 @@ int main(void) {
       }
       g_num_stones += 2;
       initialize_array(g_num_stones);
+	
+	  for (int i=0; i<5000; i++){}
+	  to_move = -1;
       continue;
     } else if (check_lose()) {
       initialize_array(g_num_stones);
@@ -5046,16 +5085,17 @@ void print_game_state() {
     if (array[i] == UNUSED) {
       break;
     }
-    if (array[i] == 1) {
+    if (array[i] == LEFT) {
       printf("L ");  // Left frog
-      draw_frog(i, 1);
+      draw_frog(i, LEFT);
 
-    } else if (array[i] == 2) {
+    } else if (array[i] == RIGHT) {
       printf("R ");  // Right frog
-      draw_frog(i, 2);
+      draw_frog(i, RIGHT);
       
-    } else {
+    } else if (array[i] == EMPTY) {
       printf("_ ");  // Empty stone
+	  draw_frog(i, EMPTY);
     }
   }
   printf("\n");
@@ -5063,6 +5103,7 @@ void print_game_state() {
 
 int validate_move(int to_move) {
   to_move -= 1;  // to align user input with array
+	
   //** assume user input will be in range, otherwise need some handler here **//
   if (array[to_move] == EMPTY) {
     // printf("This is an empty stone, can't move!\n");
@@ -5202,16 +5243,50 @@ void draw_left_frog(int initial_x, int initial_y) {
 void draw_right_frog(int initial_x, int initial_y) {
   for (int y=27;y>=0;y--) {
     for (int x=0;x<23;x++) {
-      if (right_frog[x+y*23]==0x0000) continue;
+      if (right_frog[x+y*23]==0x0000) continue;		
       plot_pixel(initial_x+x, initial_y+y,right_frog[x+y*23]);
     }
   }
 }
 
-void draw_frog(int i, int side){
-  if(side == 1){
-    draw_left_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 27);
-  }else if(side == 2){
-    draw_right_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 27);
+void draw_empty_frog(int initial_x, int initial_y){
+  for (int y=27;y>=0;y--) {
+	for (int x=0;x<23;x++) {
+	  int x_bg = initial_x+x;	 
+      int y_bg = initial_y+y;		
+	  plot_pixel(x_bg, y_bg, right_frog[x_bg+y_bg*320]);
+    }
   }
 }
+
+void draw_frog(int i, int side){
+	// 29 is docks width, 27 is frog height
+  if(side == LEFT){
+	draw_empty_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 28);
+    draw_left_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 28);
+  }else if(side == RIGHT){
+	draw_empty_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 28);
+    draw_right_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 28);
+  } else if (side == EMPTY) {
+	draw_empty_frog(initial_rock_x + i * 29 + (MAX-g_num_stones)/2*29, initial_rock_y - 28);
+  }
+}
+
+// ***** PS2 Function Definition ***** //
+
+int input_mux(char key_byte) {
+	if (key_byte == 0x16) return 1;
+	if (key_byte == 0x1E) return 2;
+	if (key_byte == 0x26) return 3;
+	if (key_byte == 0x25) return 4;
+	if (key_byte == 0x2E) return 5;
+	if (key_byte == 0x36) return 6;
+	if (key_byte == 0x3d) return 7;
+	if (key_byte == 0x3E) return 8;
+	if (key_byte == 0x46) return 9;
+	if (key_byte == 0x45) return 10;
+	if (key_byte == 0x4E) return 11;
+	if (key_byte == 0x2d) return -1; // click on R
+	
+	return 0; 
+};
