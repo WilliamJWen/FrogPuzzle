@@ -5480,7 +5480,7 @@ void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   int prev_x = current_x;
   int prev_y = current_y;
   int prev_dy = 0;
-  jumping_playback_mono();
+
   for (int i = 0; i <= distance; i++) {
     draw_empty_frog(prev2_x, prev2_y);
     draw_left_jumping_frog(current_x, current_y);
