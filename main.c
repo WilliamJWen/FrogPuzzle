@@ -5277,6 +5277,8 @@ int make_move(int to_move, int move, volatile int *pixel_ctrl_ptr) {
 	  animate_left_small_jump(to_move, pixel_ctrl_ptr);
   }else if (move == -1){
     animate_right_small_jump(to_move, pixel_ctrl_ptr);
+  }else if (move == -2){
+    animate_right_big_jump(to_move, pixel_ctrl_ptr);
   }
 	  
   array[to_move + move] = array[to_move];
@@ -5439,14 +5441,14 @@ void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
     //dy = (1/50 * (i - 3.4) * (i - 3.4) + 4) - prev_dy;
     //prev_dy = dy;
 	  
-	dy = 2;
+	  dy = 2;
 	  
     prev2_x = prev_x;
     prev2_y = prev_y;
     prev_x = current_x;
     prev_y = current_y;
 	
-	if(current_y < 125 && current_x < frog_x[to_move] + distance/2 + 19) {dy = 0;}
+	if(current_y < 125 && current_x < frog_x[to_move] + distance/2 + 15) {dy = 1;}
 	  
     if(i <= distance/2){
       current_x += dx;
@@ -5580,6 +5582,58 @@ void animate_right_small_jump(int to_move, volatile int *pixel_ctrl_ptr){
 
 }
 
+void animate_right_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
+  int distance =  frog_x[to_move] - frog_x[to_move - 2];
+  int dx = 1;
+  int dy = 2;
+
+  int current_x = frog_x[to_move];
+  int current_y = frog_y[to_move];
+  int prev2_x = current_x;
+  int prev2_y = current_y;
+  int prev_x = current_x;
+  int prev_y = current_y;
+  int prev_dy = 0;
+
+  for (int i = 0; i <= distance; i++) {
+    draw_empty_frog(prev2_x, prev2_y);
+    draw_right_jumping_frog(current_x, current_y);
+
+    //dy = (1/50 * (i - 3.4) * (i - 3.4) + 4) - prev_dy;
+    //prev_dy = dy;
+	  
+    prev2_x = prev_x;
+    prev2_y = prev_y;
+    prev_x = current_x;
+    prev_y = current_y;
+	
+	  if(current_y < 130 && current_x > frog_x[to_move] - distance/2) {dy = 1;}
+	  
+    if(i <= distance/2){
+      current_x -= dx;
+      current_y -= dy;
+    }else{
+      current_x -= dx;
+      current_y -= -dy;
+    }
+
+    *pixel_ctrl_ptr = 1;
+    wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+  }
+
+  //erasing the last two
+  draw_empty_frog(prev2_x, prev2_y);
+  *pixel_ctrl_ptr = 1;
+  wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+  draw_empty_frog(prev_x, prev_y);
+  *pixel_ctrl_ptr = 1;
+  wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+}
 // ***** PS2 Function Definition ***** //
 
 int input_mux(char key_byte) {
