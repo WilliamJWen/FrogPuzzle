@@ -1,13 +1,15 @@
 // This code put all .h .c files in develop folder into one .c file
 // So that can copy and paste into CPULator and run simulations
-// Command + F "coding starts here" to skip back ground color array
-
-// You can fold this source for cleaner screen
+// Command + F "coding starts here" to skip resources arrays
 
 //******* include library here *******//
 #include <stdbool.h>
 #include <stdio.h>
+#include <time.h>
 
+//******* define NIOS II Addresses *******//
+#define PS2_BASE 0xFF200100
+#define AUDIO_BASE 0xFF203040 
 //******* define Macros here *******//
 #define MAX 9
 #define SPACING 34 // x of each frog is 23px + a spacing between each stone is 11px
@@ -5008,6 +5010,11 @@ const unsigned short right_jump[575] ={
 0x0000, 0x61A0, 0x9C48, 0x9C49, 0x7B00, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0000, 0x0008, 0x8400, 0x52A0, 0x8400, 0x0000
 };
 
+// Frog Jump Audio
+// Sound from Zapsplat.com Cartoon frog jump
+// c array is obtained using https://j0e.ca/sound2c/ 
+// sound2c is Courtesy of Mr.Joe Dai, A brilliant UofT EE second-year student as of 2024
+const int jump_sound[1344] = { -36523,4880,-26542,-5989,-39111,-37632,-99440,-111565,-143356,-150528,-149566,-131601,-138920,-123172,-118293,-113413,-106907,-79256,-46726,2366,25950,68906,78813,114300,106759,112082,124799,88867,113265,134114,184537,217954,268968,290557,399090,459272,641591,756630,957432,1143004,1273274,1477477,1682124,2004472,2329185,2773818,3278041,3785074,4344451,4941386,5350827,5569077,5474147,4955729,3997114,2695301,1010664,-1032844,-3423763,-5907986,-8592493,-11199741,-13703482,-15948679,-17680929,-18795913,-18959305,-18163564,-16288327,-13367013,-9528707,-4944935,208269,5687962,11016165,15956072,19911636,22612556,23470771,22216275,18710077,12994169,5339885,-3548119,-12851848,-21836777,-29479897,-35223087,-38356071,-38058121,-34396294,-27161950,-16429465,-2628836,12889627,28973752,43972096,57012547,66363445,71052128,70163749,62989882,50058261,31838212,9093759,-15558165,-39810112,-61751800,-78396558,-87490465,-86699604,-74296086,-50636565,-17097598,24547679,69355809,113248353,150884687,178280265,192256855,190317888,171850016,136653028,86842886,25647654,-42193934,-110475718,-173899661,-226270472,-262213592,-277417914,-269544714,-237817919,-185002401,-115598388,-35538559,46331002,121227647,181583296,219331860,229912707,211090844,163491742,91483513,1789474,-95980857,-191403668,-273388491,-332061056,-360674384,-355040763,-314159954,-241095887,-142234230,-27086760,100233188,218724870,319111838,387364567,410574354,392728998,331458206,230422993,108656079,-26435706,-156446815,-262150305,-333153637,-360754232,-337463562,-265948096,-152652573,-8535047,150648397,305165413,436045900,524848306,555146346,522393139,429508152,282293943,100419499,-94078931,-276611970,-419320406,-500541132,-509410948,-442107297,-305504987,-114170002,107775537,329144399,515801716,638233879,672158924,608757827,450239409,220735995,-50049611,-319463981,-543625440,-687627039,-727266587,-657799805,-489130386,-247602878,30787550,298218668,507077031,617074550,605004100,469424284,228809035,-78891762,-406790611,-695772977,-892693082,-960549530,-882769351,-667785344,-349634339,20048116,375929793,649083252,781289505,737853867,526354765,185618189,-215080342,-592498703,-863297025,-958883302,-858091107,-571872209,-152525113,324144606,766453518,1076297115,1178501061,1035237092,676424858,173718229,-360063919,-796313356,-1023170561,-974364799,-656846660,-132249283,487027436,1056986111,1419836860,1462660186,1157517396,569929545,-155606270,-827075695,-1258564587,-1325799110,-1003343726,-370934140,413081422,1131301789,1558501457,1545336356,1066360224,252572137,-660399732,-1382490640,-1671085153,-1436452563,-768283064,116904045,916236012,1340630514,1249506167,682502743,-171345423,-1030159891,-1587397727,-1642198790,-1171760885,-357389393,517160457,1127418532,1251343550,846034705,57436848,-801100444,-1379067838,-1450895966,-971025023,-111924213,807111641,1428188184,1504828612,1002203087,112550869,-804942668,-1357549490,-1293181644,-626893888,370746794,1287911848,1717986918,1473850537,656391972,-371595619,-1145706526,-1326911950,-836308375,98545002,1042640890,1549829116,1374245336,604555327,-383974517,-1110930364,-1223681148,-683755389,204426079,961029799,1168996974,727028153,-134367833,-954344481,-1286818675,-966228768,-181562373,608422319,924218853,573419331,-243612714,-1043488310,-1353819126,-987472307,-156603183,659142576,975827046,608313489,-214945858,-981976053,-1214843715,-757015452,133216326,923718623,1140307568,677006267,-155466833,-808325251,-859284755,-273069027,576523925,1149301222,1089724679,457359453,-311921262,-698195614,-459097988,221764403,871089268,1027603362,601310556,-110639332,-595119110,-533124662,-21359614,525676652,686588724,329971857,-290884588,-707931777,-651738112,-203628047,256579454,356951192,9467195,-516156299,-816341954,-669251361,-207250320,202051943,237891261,-100786281,-513582913,-645209902,-370095888,104419127,416447740,339784984,-22276161,-322564288,-276700837,93753108,495135224,611503403,363908731,-1525903,-135824683,78366763,453131521,649937030,486354498,119143771,-124423105,-45832916,238758791,415245885,284119201,-61584859,-318127494,-279848239,-54173224,86632769,-46828202,-342100935,-513969509,-411512046,-172505580,-67562934,-208770235,-425556359,-458854231,-254907607,-18437855,31764131,-100323904,-190271089,-83171373,141788118,261671959,190509671,83745537,121436285,297829780,418576123,358256109,213024783,178724307,301201125,395590057,310376358,132859526,43185301,74909065,86857525,-30576397,-187155404,-237223942,-189276172,-189525918,-280495818,-360122400,-350102630,-307344662,-319812575,-364714970,-345393394,-238098347,-117547114,-39291472,15259550,95325367,178064528,210996357,198839258,206737225,270139210,352105771,392341293,391124947,378160500,349495788,281721110,191176398,99781162,9581052,-79374766,-149707378,-185740918,-221651877,-293279648,-373142741,-427631511,-439166094,-419317227,-372042470,-296955079,-218941789,-154990408,-90517578,7528524,126538550,230372127,303361891,363451381,409988805,434298419,433065808,414941429,380311359,324339049,254722996,165633729,33731340,-121845579,-252962134,-338026636,-389538345,-419505978,-446364507,-467002978,-464638527,-422264271,-332998156,-211347243,-75696229,69474102,204256625,311898935,401358606,473526826,517227292,526239282,491210417,417540026,302608809,162982936,18721462,-129691423,-284473414,-423993342,-515612004,-545379205,-525767885,-474971255,-402885766,-294280700,-141116215,35487101,200279177,333642630,428559740,495689722,536483438,528936949,464072718,334143305,167783110,-10953322,-183495129,-333715972,-455664539,-532963636,-548400255,-506316408,-411627234,-269352119,-97760720,81951627,262171007,418139770,533308607,580253106,542305071,428398270,259130438,66066678,-134533073,-325976591,-471138716,-561554858,-571399185,-488705493,-326444144,-114983783,114065757,328631008,493164614,584691895,574381791,461344886,257765043,13520793,-227773604,-416388889,-527478251,-553227711,-481687773,-312570616,-90261400,154799439,375849650,512898367,525609668,420282053,236700200,11498652,-204912633,-365771990,-433592581,-395500081,-266912626,-92660896,83086942,240680310,345717812,344438327,262110529,123022296,-52551725,-210500932,-299211884,-302461535,-234637322,-104883795,59943842,206622333,277704774,257204779,161335265,21648174,-112180613,-200879439,-215183479,-144896705,-9657572,145288402,231991408,185271665,1647967,-223400615,-301309733,-171839296,69320913,204580599,121390447,-38777711,-110148712,24076947,276704756,323307240,22336121,-269642380,-248950381,-18885963,129330999,44401647,-153394934,-227876371,-93637699,99144598,159088589,32825144,-102187459,-60838210,142656979,249422443,103296380,-101039575,-89291252,54634861,74089296,-98637344,-225633909,-111767993,79684397,56604584,-93727675,-25502893,183187642,115529926,-38735200,67590585,95176910,-109372416,-121175893,5011105,-57168028,-101664235,15090169,59266764,57446681,93042316,22740904,-2331551,21993885,-64180129,-91530165,-15848278,-20490383,-3566454,74356046,59349569,18849810,10518152,-32853460,-55158529,-37708936,-21230083,29870855,68874358,3612810,21148683,-11467156,-49819309,-9207172,-22708152,26129993,21476206,23844132,-9969569,-13442868,-20784933,-3141044,11829132,13417509,7588483,-8133296,-10350029,-2448587,8185270,6156845,-3436997,-6596450,-1180636,4460230,3916379,-4150820,-4881057,1715098,7976188,460381,-6797326,-2895216,4910630,3037759,-3765556,-2833260,3509747,1871096,-2803392,-1220708,3800304,795371,-3498657,755300,3023712,-3190579,-1510969,3244919,-69645,-2436536,2423672,481452,-2449992,2577452,-528547,-2284086,2697372,-1833464,597231,725874,-2216881,2622995,-2006394,2054894,2975951,-7710177,190082,-203538,12540664,-7973452,418313,-11211126,9628443,5268466,-4480192,-2237065,-4383414,8154958,1194462,-6869854,2138142,2583367,-1121564,-1166885,-68388,1372344,408849,-1951905,669685,93969,953144,-950852,-346450,466074,62695,255660,-269560,-697336,889414,83840,-498161,48648,38297,283607,-239025,-170194,234220,49239,-104172,-78739,164723,-15008,-224165,198732,19518,-43916,-36893,113709,-64026,-110382,153485,-28612,-94117,34970,17892,-35044,8059,61364,-7467,-38223,591,5471,665,3845,-38963,36671,-51901,-32604,29721,148,-37632,4880,30017,-43768,1479,961,222,-5619,-74,148,-10055,-8724,-222,148,1183,-2218,0,0,-1331,2144,591,3697,-148,0,-26468,-444,0,0,0,0,1479,2218,74,296,2957,-74,0,0,0,0,0,0,0,0,0,0,1627,1035,-444,0,148,-22993,-444,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 // coding starts here
 
 //***************** VGA Stuff *****************//
@@ -5022,6 +5029,10 @@ void draw_left_frog(int initial_x, int initial_y);
 void draw_right_frog(int initial_x, int initial_y);
 void draw_empty_frog(int initial_x, int initial_y);
 void draw_frog(int i, int side);
+void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr);
+void animate_left_small_jump(int to_move, volatile int *pixel_ctrl_ptr);
+void animate_right_big_jump(int to_move, volatile int *pixel_ctrl_ptr);
+void animate_right_small_jump(int to_move, volatile int *pixel_ctrl_ptr);
 
 int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
@@ -5043,6 +5054,27 @@ int initial_rock_y = 180;
 int frog_x[MAX];
 int frog_y[MAX];
 
+//** Initialize Audio **//
+  struct audio_t {
+    volatile unsigned int control;  // The control/status register
+    volatile unsigned char rarc;    // the 8 bit RARC register
+    volatile unsigned char ralc;    // the 8 bit RALC register
+    volatile unsigned char wsrc;    // the 8 bit WSRC register
+    volatile unsigned char wslc;    // the 8 bit WSLC register
+    volatile unsigned int ldata;    // the 32 bit (really 24) left data register
+    volatile unsigned int rdata;  // the 32 bit (really 24) right data register
+  };
+
+  /* we don't need to 'reserve memory' for this, it is already there
+           so we just need a pointer to this structure  */
+
+  struct audio_t *const audiop = ((
+      struct audio_t *)AUDIO_BASE);  // const after the asterisk applies to the
+                                     // pointer itself, meaning it will always
+                                     // point to the same memory address
+
+void audio_playback_mono(const int *samples, int n);
+
 //******* Function Declaration *******//
 void clear_array();
 void initialize_array(int num_stones);
@@ -5058,20 +5090,23 @@ bool check_lose();
 int input_mux(char key_byte);
 
 int main(void) {
-  	/* Declare volatile pointers to I/O registers (volatile means that IO load
-       and store instructions will be used to access these pointer locations,
-       instead of regular memory loads and stores) */
-    //volatile int * PS2_ptr = (int *)PS2_BASE;
-	volatile int * PS2_ptr = (int *) 0xFF200100;  // PS/2 port address
+  /* Declare volatile pointers to I/O registers (volatile means that IO load
+    and store instructions will be used to access these pointer locations,
+    instead of regular memory loads and stores) */
+  
+  //** Initialize PS2 **//
+	volatile int * PS2_ptr = (int *) PS2_BASE;  // PS/2 port address
 
     int  PS2_data, RVALID;
     char byte1 = 0, byte2 = 0, byte3 = 0;
 
     // PS/2 mouse needs to be reset (must be already plugged in)
     *(PS2_ptr) = 0xFF; // reset
-	
-	
-  //***** VGA *****//
+                    
+	audiop->control = 0x8; // clear the output FIFOs
+  audiop->control = 0x0; // resume input conversion
+
+  //** Initiallize VGA **//
   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;
   /* Read location of the pixel buffer from the pixel buffer controller */
   //pixel_buffer_start = *pixel_ctrl_ptr;
@@ -5092,32 +5127,36 @@ int main(void) {
 	
   clear_array();
   initialize_array(g_num_stones);
-
+  time_t start, end;
+  double elapsed;  // seconds
+  time(&start);  // Record the start time
+  printf("The start time is  %f second\n", start);
   while (1) {
+    
     print_game_state();
     //int to_move = get_input();
     *pixel_ctrl_ptr = 1;
     wait_for_vsync();  // swap front and back buffers on VGA vertical sync
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
     
-	PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
-        RVALID   = PS2_data & 0x8000; // extract the RVALID field
-        if (RVALID) {
-            /* shift the next data byte into the display */
-            byte1 = byte2;
-            byte2 = byte3;
-            byte3 = PS2_data & 0xFF;
+	  PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+    RVALID   = PS2_data & 0x8000; // extract the RVALID field
+    if (RVALID) {
+      /* shift the next data byte into the display */
+      byte1 = byte2;
+      byte2 = byte3;
+      byte3 = PS2_data & 0xFF;
 
-            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-                // mouse inserted; initialize sending of data
-                *(PS2_ptr) = 0xF4;
-        }
-	int to_move = input_mux(byte3);
-	byte1 = 0x00;
-	byte2 = 0x00;
-	byte3 = 0x00;
+      if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+      // mouse inserted; initialize sending of data
+      *(PS2_ptr) = 0xF4;
+    }
+    int to_move = input_mux(byte3);
+    byte1 = 0x00;
+    byte2 = 0x00;
+    byte3 = 0x00;
 	  
-    printf("You haved selected %d\n", to_move);
+    //printf("You haved selected %d\n", to_move);
     if (to_move == -1) {  // mistake restart the game
       initialize_array(g_num_stones);
       continue;
@@ -5130,7 +5169,12 @@ int main(void) {
       make_move(to_move, move, pixel_ctrl_ptr);
     }
     if (check_win()) {
-      //printf("now! try a more difficult one!\n");
+      time(&end);  // Record the end time
+
+      // Calculate the elapsed time
+      elapsed = difftime(end, start);
+      printf("The code block took %f seconds to execute.\n", elapsed);
+      printf("now! try a more difficult one!\n");
       if (g_num_stones == MAX) {
         //printf("You have nailed it all! \n");
         break;
@@ -5190,29 +5234,29 @@ void print_array() {
 void print_game_state() {
   draw_frog_docks_level(g_num_stones);
 
-  for (int i = 1; i < g_num_stones + 1; i++) {  // notice 1 and +1
-    printf("%d ", i);
-  }
-  printf("\n");
+  // for (int i = 1; i < g_num_stones + 1; i++) {  // notice 1 and +1
+  //   printf("%d ", i);
+  // }
+  // printf("\n");
 
   for (int i = 0; i < MAX; i++) {
     if (array[i] == UNUSED) {
       break;
     }
     if (array[i] == LEFT) {
-      printf("L ");  // Left frog
+      //printf("L ");  // Left frog
       draw_frog(i, LEFT);
 
     } else if (array[i] == RIGHT) {
-      printf("R ");  // Right frog
+      //printf("R ");  // Right frog
       draw_frog(i, RIGHT);
       
     } else if (array[i] == EMPTY) {
-      printf("_ ");  // Empty stone
+      //printf("_ ");  // Empty stone
 	  draw_frog(i, EMPTY);
     }
   }
-  printf("\n");
+  //printf("\n");
 }
 
 int validate_move(int to_move) {
@@ -5271,6 +5315,9 @@ int validate_move(int to_move) {
 
 int make_move(int to_move, int move, volatile int *pixel_ctrl_ptr) {
   to_move -= 1;
+
+ audio_playback_mono(jump_sound, 1344);
+
   if (move == 2) {
     animate_left_big_jump(to_move, pixel_ctrl_ptr);
   }else if (move == 1){
@@ -5283,7 +5330,7 @@ int make_move(int to_move, int move, volatile int *pixel_ctrl_ptr) {
 	  
   array[to_move + move] = array[to_move];
   array[to_move] = EMPTY;
-  
+
   // printf("Made a move\n");
   return 1;
 }
@@ -5433,11 +5480,10 @@ void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   int prev_x = current_x;
   int prev_y = current_y;
   int prev_dy = 0;
-
+  jumping_playback_mono();
   for (int i = 0; i <= distance; i++) {
     draw_empty_frog(prev2_x, prev2_y);
     draw_left_jumping_frog(current_x, current_y);
-
     //dy = (1/50 * (i - 3.4) * (i - 3.4) + 4) - prev_dy;
     //prev_dy = dy;
 	  
@@ -5457,7 +5503,6 @@ void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
       current_x += dx;
       current_y -= -dy;
     }
-
     *pixel_ctrl_ptr = 1;
     wait_for_vsync();  // swap front and back buffers on VGA vertical sync
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
@@ -5473,7 +5518,6 @@ void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   *pixel_ctrl_ptr = 1;
   wait_for_vsync();  // swap front and back buffers on VGA vertical sync
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-
 }
 
 void animate_left_small_jump(int to_move, volatile int *pixel_ctrl_ptr){
@@ -5598,7 +5642,7 @@ void animate_right_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   for (int i = 0; i <= distance; i++) {
     draw_empty_frog(prev2_x, prev2_y);
     draw_right_jumping_frog(current_x, current_y);
-
+    
     //dy = (1/50 * (i - 3.4) * (i - 3.4) + 4) - prev_dy;
     //prev_dy = dy;
 	  
@@ -5652,3 +5696,15 @@ int input_mux(char key_byte) {
 	
 	return 0; 
 };
+
+void audio_playback_mono(const int *samples, int n) {
+  int i;
+  audiop->control = 0x8; // clear the output FIFOs
+  audiop->control = 0x0; // resume input conversion
+  for (i = 0; i < n; i++) { // output a sample per iteration
+    // wait until there is space at the output FIFOs
+    while (audiop->wsrc == 0);
+    audiop->ldata = samples[i];
+    audiop->rdata = samples[i];
+    }
+}     
