@@ -4821,30 +4821,23 @@ const unsigned short bg[76800]={
 0xBE8E, 0xBE8E, 0xBE8E, 0xBE8E, 0xBE8F, 0xBE8E, 0xC6D0, 0xCED1, 0xC6D1, 0xCED2, 0xC6D2, 0xC6B1, 0xC6D1, 0xC6D1, 0xC6D1, 0xC6D1,   // 0x12C00 (76800) pixels
 };
 
-const unsigned short frog_dock[368] ={
-0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x8410, 0x0000, 0x0000, 0x5100, 0x732C, 0x8C72, 0x94F4, 0x94B3, 0x8410, 0x0000, 0x0000,   // 0x0010 (16) pixels
-0x0000, 0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0000, 0x0000, 0x73D0, 0x9D55,   // 0x0020 (32) pixels
-0xA597, 0xA5B8, 0xADD8, 0xA5B8, 0xA5B7, 0xA576, 0x94D4, 0x61C7, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,   // 0x0030 (48) pixels
-0x0000, 0xFFFF, 0x0000, 0x4A8B, 0xCE79, 0xC67A, 0xADF8, 0xAE19, 0xAE19, 0xAE19, 0xAE19, 0xAE19, 0xAE19, 0xADF8, 0xA577, 0x8431,   // 0x0040 (64) pixels
-0x0000, 0x0000, 0x8410, 0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0000, 0x7C31, 0xADB7, 0xD6FC, 0xCEBB, 0xA5D8, 0xADF9, 0xADF8,   // 0x0050 (80) pixels
-0xADF9, 0xADF9, 0xADF8, 0xADF9, 0xADF9, 0xAE19, 0xADD8, 0x8C72, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xBDF7, 0x0000, 0x52EC,   // 0x0060 (96) pixels
-0xDF1C, 0xF7BE, 0xA5D8, 0xADD8, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF8, 0xAE19, 0xADD8, 0x8CB3,   // 0x0070 (112) pixels
-0x0000, 0xFFFF, 0x0000, 0x8410, 0x0000, 0x0000, 0xD6BB, 0xFFFF, 0xCEBB, 0xADF8, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9,   // 0x0080 (128) pixels
-0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xAE19, 0x9D15, 0x8411, 0x0000, 0x8410, 0x0000, 0x0000, 0xB5D7, 0xFFFF, 0xDF1C, 0x9D97,   // 0x0090 (144) pixels
-0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xAE19, 0x9D35, 0x94D3, 0x95B6,   // 0x00A0 (160) pixels
-0x0000, 0x0000, 0x73D0, 0xD6DB, 0xEF9E, 0xADF8, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9,   // 0x00B0 (176) pixels
-0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xAE19, 0xA597, 0x8452, 0x0000, 0x7C10, 0x94F5, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9,   // 0x00C0 (192) pixels
-0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF8, 0xADF9, 0xADF8, 0x94F4, 0x0000, 0x8472,   // 0x00D0 (208) pixels
-0x9556, 0xADF9, 0xADF8, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF8, 0xA5B7, 0xADF9, 0xADF9,   // 0x00E0 (224) pixels
-0xADF9, 0xADF8, 0xA5B8, 0xAE19, 0x9D35, 0x4000, 0x8CB3, 0x9D97, 0x9556, 0xA597, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9,   // 0x00F0 (240) pixels
-0xADF9, 0xADF9, 0xADF9, 0xADD8, 0x9D56, 0xADF8, 0xADF9, 0xAE19, 0xA5D8, 0x9556, 0x9D97, 0x8D35, 0x8410, 0x8CB3, 0x9535, 0x84B3,   // 0x0100 (256) pixels
-0xA5B8, 0xAE19, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xADF9, 0xAE19, 0x9D97, 0xADF8, 0xAE19, 0xADF9, 0xAE19, 0x9D77,   // 0x0110 (272) pixels
-0x8CD4, 0x9577, 0x9556, 0x8C93, 0x8431, 0x8473, 0x84B3, 0x9D97, 0xADF8, 0xADF9, 0xA597, 0x9D56, 0xADD8, 0xAE19, 0xADF9, 0xAE19,   // 0x0120 (288) pixels
-0xADF8, 0x9556, 0x9D97, 0xADF9, 0xADF9, 0x9DB7, 0x8D15, 0x8CD4, 0x9536, 0x8CD4, 0x8C92, 0x0000, 0x7B8E, 0x8CB3, 0x9556, 0x9D97,   // 0x0130 (304) pixels
-0x9DB7, 0x9D56, 0x9D77, 0xA5D8, 0xA5B8, 0xA597, 0xA5D8, 0x9D97, 0x9577, 0x9576, 0x9D77, 0x9556, 0x8CF5, 0x8CB3, 0x83F0, 0x730C,   // 0x0140 (320) pixels
-0x0000, 0x0000, 0x85F7, 0x0000, 0x8431, 0x9515, 0x9536, 0x9536, 0x9556, 0x9536, 0x9535, 0x8CB3, 0x8CF4, 0x9556, 0x9536, 0x9535,   // 0x0150 (336) pixels
-0x8D15, 0x8CD4, 0x8C93, 0x8410, 0x0000, 0x0000, 0x0000, 0x0000, 0x52B5, 0x0000, 0x5555, 0x0000, 0x3000, 0x8C51, 0x8C93, 0x8452,   // 0x0160 (352) pixels
-0x7BF0, 0x8472, 0x8411, 0x8411, 0x8472, 0x8C72, 0x8431, 0x7B8E, 0x0000, 0x0000, 0x0000, 0x0000, 0x9CD3, 0x8417, 0x8410, 0x0000,   // 0x0170 (368) pixels
+const unsigned short frog_dock[16][23] = {
+	{59620,59620,59620,59620,59620,59620,59620,59620,59620,63389,57051,54970,54970,59196,59620,59620,59620,59620,59620,59620,59620,59620,59620},
+	{59620,59620,59620,59620,59620,59620,59620,54970,44438,44503,46584,46617,46584,44504,46584,50777,59620,59620,59620,59620,59620,59620,59620},
+	{59620,59620,59620,59620,59620,54970,52890,50842,46681,48730,48729,48729,48729,48729,46681,46681,44503,52857,59620,59620,59620,59620,59620},
+	{59620,59620,59620,59620,50745,44504,55068,52923,46649,48729,48729,48729,48729,48729,48729,48729,48730,46617,52825,59620,59620,59620,59620},
+	{59620,59620,59620,54905,55068,65535,46649,46649,46681,48729,48729,48729,48729,48729,48729,48729,48729,48729,46617,52857,59620,59620,59620},
+	{59620,59620,59196,52890,65535,50842,46649,46681,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48730,40213,59196,59620,59620},
+	{59620,59620,48632,65535,55036,46649,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48730,42326,42325,59620,59620},
+	{59620,52857,55003,61374,46649,46681,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,46681,48730,44536,57083,59620},
+	{59620,38132,48730,46681,46681,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,46681,50842,46649,46681,48632,59620},
+	{50777,40310,46649,46649,48729,48729,48729,48729,48729,48729,48729,48729,48729,48729,46616,48729,48729,46649,55035,42456,48762,42390,59620},
+	{42358,44536,40311,44536,48730,48729,48729,48729,48729,48729,48729,48729,48729,46649,42326,48730,48729,48729,46649,40310,42456,36149,59620},
+	{44471,38230,36051,46649,48730,48729,48730,48730,48729,48729,48729,48729,48730,42423,48729,48729,48729,48762,42423,36084,40343,38230,54938},
+	{59620,38132,35987,42488,48729,48762,46584,42358,46617,48730,48730,48730,46681,40343,42456,48762,46649,42456,38230,36052,40310,42326,59620},
+	{59620,59620,36051,40343,40343,42456,42358,46616,46649,46617,44504,46649,42423,40343,40343,40343,38263,36117,44438,59620,59620,59620,59620},
+	{59620,59620,59620,42390,38230,38262,38263,38230,36149,33939,36117,38262,38230,38198,40278,44439,46551,59620,59620,59620,59620,59620,59620},
+	{59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620,59620},
 };
 
 //23 x 27
@@ -5871,6 +5864,14 @@ void animate_left_small_jump(int to_move, volatile int *pixel_ctrl_ptr);
 void animate_right_big_jump(int to_move, volatile int *pixel_ctrl_ptr);
 void animate_right_small_jump(int to_move, volatile int *pixel_ctrl_ptr);
 
+// Pages
+void draw_start_message(int initial_x, int initial_y);
+void erase_start_message(int initial_x, int initial_y);
+void draw_next_level_message(int initial_x, int initial_y);
+void erase_next_level_message(int initial_x, int initial_y);
+
+
+
 int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
@@ -5992,6 +5993,7 @@ int main(void) {
   double elapsed;  // seconds
   time(&start);  // Record the start time
   printf("The start time is  %f second\n", start);
+  // Game ON
   while (1) {
     
     print_game_state();
@@ -6028,6 +6030,7 @@ int main(void) {
       continue;  // don't make a change
     } else {
       make_move(to_move, move, pixel_ctrl_ptr);
+      print_game_state();
     }
     
     if (check_win()) {
@@ -6316,10 +6319,10 @@ void erase_next_level_message(int initial_x, int initial_y){
 }
 
 void draw_frog_docks(int initial_x, int initial_y) {
-  for (int y=15;y>=0;y--) {
+  for (int y=0;y<16;y++) {
     for (int x=0;x<23;x++) {
-      if (frog_dock[x+y*23]==0x0000) continue;
-      plot_pixel(initial_x+x, initial_y+y,frog_dock[x+y*23]);
+      if (frog_dock[y][x]== 59620) continue;
+      plot_pixel(initial_x+x, initial_y+y,frog_dock[y][x]);
     }
   }
 }
@@ -6331,7 +6334,7 @@ void draw_frog_docks_level(int num_stone){
 }
 
 void draw_left_frog(int initial_x, int initial_y) {
-  for (int y=27;y>=0;y--) {
+  for (int y=26;y>=0;y--) {
     for (int x=0;x<23;x++) {
       if (left_frog[x+y*23]==0x0000) continue;
       plot_pixel(initial_x+x, initial_y+y,left_frog[x+y*23]);
@@ -6340,7 +6343,7 @@ void draw_left_frog(int initial_x, int initial_y) {
 }
 
 void draw_right_frog(int initial_x, int initial_y) {
-  for (int y=27;y>=0;y--) {
+  for (int y=26;y>=0;y--) {
     for (int x=0;x<23;x++) {
       if (right_frog[x+y*23]==0x0000) continue;		
       plot_pixel(initial_x+x, initial_y+y,right_frog[x+y*23]);
@@ -6349,7 +6352,7 @@ void draw_right_frog(int initial_x, int initial_y) {
 }
 
 void draw_empty_frog(int initial_x, int initial_y){
-  for (int y=27;y>=0;y--) {
+  for (int y=26;y>=0;y--) {
 	for (int x=0;x<25;x++) {
 	  int x_bg = initial_x+x;	 
       int y_bg = initial_y+y;		
