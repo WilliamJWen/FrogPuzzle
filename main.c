@@ -5,7 +5,6 @@
 //******* include library here *******//
 #include <stdbool.h>
 #include <stdio.h>
-#include <time.h>
 
 //******* define NIOS II Addresses *******//
 #define PS2_BASE 0xFF200100
@@ -4965,8 +4964,8 @@ int frog_y_offset = 28; //distance between frog's head and rock
   //** Initialize PS2 **//
 	volatile int * PS2_ptr = (int *) PS2_BASE;  // PS/2 port address
 
-    int  PS2_data, RVALID;
-    char byte1 = 0, byte2 = 0, byte3 = 0;
+  int  PS2_data, RVALID;
+  char byte1 = 0, byte2 = 0, byte3 = 0;
 
 //** Initialize Audio **//
   struct audio_t {
@@ -5036,16 +5035,16 @@ int main(void) {
   while(input_mux(byte3) != START){
     PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
     RVALID   = PS2_data & 0x8000; // extract the RVALID field
-        if (RVALID) {
-            /* shift the next data byte into the display */
-            byte1 = byte2;
-            byte2 = byte3;
-            byte3 = PS2_data & 0xFF;
+      if (RVALID) {
+          /* shift the next data byte into the display */
+          byte1 = byte2;
+          byte2 = byte3;
+          byte3 = PS2_data & 0xFF;
 
-            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-                // mouse inserted; initialize sending of data
-                *(PS2_ptr) = 0xF4;
-        }
+          if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+              // mouse inserted; initialize sending of data
+              *(PS2_ptr) = 0xF4;
+      }
   }
   
   erase_start_message(start_message_x, start_message_y);
@@ -5057,7 +5056,7 @@ int main(void) {
     wait_for_vsync();  // swap front and back buffers on VGA vertical sync
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
     
-	PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+	  PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
     RVALID   = PS2_data & 0x8000; // extract the RVALID field
     if (RVALID) {
       /* shift the next data byte into the display */
@@ -5175,7 +5174,147 @@ int main(void) {
 
 //******* Function Definition *******//
 
-//***************** Game Logic FUnction Definition ****************//
+void tutorial_mode() {
+  g_num_stones = 5;
+  clear_array();
+  initialize_array(5);
+
+  while (1) {
+    
+    print_game_state();
+    //int to_move = get_input();
+    *pixel_ctrl_ptr = 1;
+    wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+    
+	  PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+    RVALID   = PS2_data & 0x8000; // extract the RVALID field
+    if (RVALID) {
+      /* shift the next data byte into the display */
+      byte1 = byte2;
+      byte2 = byte3;
+      byte3 = PS2_data & 0xFF;
+
+      if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+      // mouse inserted; initialize sending of data
+      *(PS2_ptr) = 0xF4;
+    }
+    int to_move = input_mux(byte3);
+    byte1 = 0x00;
+    byte2 = 0x00;
+    byte3 = 0x00;
+	  
+    //printf("You haved selected %d\n", to_move);
+    if (to_move == -1) {  // mistake restart the game
+      initialize_array(g_num_stones);
+      continue;
+    }
+    int move = validate_move(to_move);
+    // printf("Player move is %d\n", move);
+    if (move == 0) {
+      continue;  // don't make a change
+    } else {
+      make_move(to_move, move, pixel_ctrl_ptr);
+      print_game_state();
+    }
+    
+    if (check_win()) {
+      if (g_num_stones == MAX) {
+        //printf("You have nailed it all! \n");
+        draw_win_message(start_message_x, 50);
+        *pixel_ctrl_ptr = 1;
+        wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+        pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+        
+        byte3 = 0x00;
+        while(byte3 != 0x15){
+            PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+            RVALID   = PS2_data & 0x8000; // extract the RVALID field
+            if (RVALID) {
+                /* shift the next data byte into the display */
+            byte1 = byte2;
+            byte2 = byte3;
+            byte3 = PS2_data & 0xFF;
+
+            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+            // mouse inserted; initialize sending of data
+            *(PS2_ptr) = 0xF4;
+            }
+        }
+        clear_array();
+        clear_background();
+        g_num_stones = DEFAULT;
+        initialize_array(DEFAULT);
+        return;
+      }
+      
+      draw_next_level_message(start_message_x, 50);
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+      // press -> to the next level
+      while(input_mux(byte3) != NEXT){
+        PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+        RVALID   = PS2_data & 0x8000; // extract the RVALID field
+        if (RVALID) {
+            /* shift the next data byte into the display */
+            byte1 = byte2;
+            byte2 = byte3;
+            byte3 = PS2_data & 0xFF;
+
+            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+                // mouse inserted; initialize sending of data
+                *(PS2_ptr) = 0xF4;
+        }
+      }
+
+      // erase message if next is requested
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+      erase_next_level_message(start_message_x, 50);
+      //printf("now! try a more difficult one!\n");
+      
+      g_num_stones += 2;
+      initialize_array(g_num_stones);
+	
+      continue;
+    } else if (check_lose()) {
+      draw_lose_message(start_message_x, 40);
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+      while(input_mux(byte3) != -1){
+        PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+        RVALID   = PS2_data & 0x8000; // extract the RVALID field
+        if (RVALID) {
+            /* shift the next data byte into the display */
+          byte1 = byte2;
+          byte2 = byte3;
+          byte3 = PS2_data & 0xFF;
+
+          if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
+          // mouse inserted; initialize sending of data
+          *(PS2_ptr) = 0xF4;
+        }
+      }
+
+      // erase message if next is requested
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+
+      erase_lose_message(start_message_x, 40);
+
+      initialize_array(g_num_stones);
+    }
+  } // end of big while for Tutorial mode;
+}
+
+//***************** Game Logic Function Definition ****************//
 
 void clear_array() {
   for (int i = 0; i < MAX; i++) {
@@ -5311,6 +5450,13 @@ int make_move(int to_move, int move, volatile int *pixel_ctrl_ptr) {
 	  
   array[to_move + move] = array[to_move];
   array[to_move] = EMPTY;
+  
+  // Clear the PS/2 Keyboard FIFO
+  int RAVAIL = 0;
+  do {
+	PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
+	RAVAIL = (PS2_data & 0xFFFF0000) >> 16;			// extract the RAVAIL field
+  } while (RAVAIL > 0); 	// FIFO is not Empty
 
   // printf("Made a move\n");
   return 1;
@@ -5384,7 +5530,9 @@ void clear_background() {
     wait_for_vsync();  // swap front and back buffers on VGA vertical sync
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
 }
- 
+
+//***** Draw Messages *****//
+
 void draw_start_message(int initial_x, int initial_y){
   for (int y = 0; y < 22; y++) {
 		for (int x=0;x<250;x++){
@@ -5451,6 +5599,7 @@ void draw_win_message(int initial_x, int initial_y){
   }
 }
 
+//***** Draw Docks *****//
 void draw_frog_docks(int initial_x, int initial_y) {
   for (int y=0;y<16;y++) {
     for (int x=0;x<23;x++) {
@@ -5460,6 +5609,7 @@ void draw_frog_docks(int initial_x, int initial_y) {
   }
 }
 
+// Draw all Docks according to level number
 void draw_frog_docks_level(int num_stone){
   int count = 1;
   for(int  i = (MAX-num_stone)/2; i < MAX-(MAX-num_stone)/2; i++){
@@ -5469,7 +5619,7 @@ void draw_frog_docks_level(int num_stone){
   }
 }
 
-//numbers
+//***** Draw Numbers *****//
 void draw_number(const unsigned short number_array[10][10], int x_offset){
   for(int y = 0; y < 10; y++){
     for(int x = 0; x < 10; x++){
@@ -5496,7 +5646,7 @@ void draw_number_mux(int number, int x_offset){
   if(number == 9) draw_number(nine, x_offset);
 }
 
-//frogs
+//***** Draw Frogs *****//
 void draw_left_frog(int initial_x, int initial_y) {
   for (int y=0;y<26;y++) {
     for (int x=0;x<23;x++) {
@@ -5556,6 +5706,7 @@ void draw_right_jumping_frog(int initial_x, int initial_y){
   }
 }
 
+//***** Animations *****//
 void animate_left_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   int distance = frog_x[to_move + 2] - frog_x[to_move];
   int dx = 1;
@@ -5766,7 +5917,8 @@ void animate_right_big_jump(int to_move, volatile int *pixel_ctrl_ptr){
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
 
 }
-// ***** PS2 Function Definition ***** //
+
+//***************** PS2 Function Definition *****************//
 
 int input_mux(char key_byte) {
 	if (key_byte == 0x16) return 1;
@@ -5786,6 +5938,8 @@ int input_mux(char key_byte) {
 	return 0; 
 };
 
+//***************** Audio Function Definition *****************//
+
 void audio_playback_mono(const int *samples, int n) {
   int i;
   audiop->control = 0x8; // clear the output FIFOs
@@ -5797,144 +5951,3 @@ void audio_playback_mono(const int *samples, int n) {
     audiop->rdata = samples[i];
     }
 }     
-
-void tutorial_mode() {
-    g_num_stones = 5;
-    clear_array();
-    initialize_array(5);
-
-    while (1) {
-    
-    print_game_state();
-    //int to_move = get_input();
-    *pixel_ctrl_ptr = 1;
-    wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-    
-	  PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
-    RVALID   = PS2_data & 0x8000; // extract the RVALID field
-    if (RVALID) {
-      /* shift the next data byte into the display */
-      byte1 = byte2;
-      byte2 = byte3;
-      byte3 = PS2_data & 0xFF;
-
-      if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-      // mouse inserted; initialize sending of data
-      *(PS2_ptr) = 0xF4;
-    }
-    int to_move = input_mux(byte3);
-    byte1 = 0x00;
-    byte2 = 0x00;
-    byte3 = 0x00;
-	  
-    //printf("You haved selected %d\n", to_move);
-    if (to_move == -1) {  // mistake restart the game
-      initialize_array(g_num_stones);
-      continue;
-    }
-    int move = validate_move(to_move);
-    // printf("Player move is %d\n", move);
-    if (move == 0) {
-      continue;  // don't make a change
-    } else {
-      make_move(to_move, move, pixel_ctrl_ptr);
-      print_game_state();
-    }
-    
-    if (check_win()) {
-      if (g_num_stones == MAX) {
-        //printf("You have nailed it all! \n");
-        draw_win_message(start_message_x, 50);
-        *pixel_ctrl_ptr = 1;
-        wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-        pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-        
-        byte3 = 0x00;
-        while(byte3 != 0x15){
-            PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
-            RVALID   = PS2_data & 0x8000; // extract the RVALID field
-            if (RVALID) {
-                /* shift the next data byte into the display */
-            byte1 = byte2;
-            byte2 = byte3;
-            byte3 = PS2_data & 0xFF;
-
-            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-            // mouse inserted; initialize sending of data
-            *(PS2_ptr) = 0xF4;
-            }
-        }
-        clear_array();
-        clear_background();
-        g_num_stones = DEFAULT;
-        initialize_array(DEFAULT);
-        return;
-      }
-      
-      draw_next_level_message(start_message_x, 50);
-      *pixel_ctrl_ptr = 1;
-      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-
-      // press -> to the next level
-      while(input_mux(byte3) != NEXT){
-        PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
-        RVALID   = PS2_data & 0x8000; // extract the RVALID field
-        if (RVALID) {
-            /* shift the next data byte into the display */
-            byte1 = byte2;
-            byte2 = byte3;
-            byte3 = PS2_data & 0xFF;
-
-            if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-                // mouse inserted; initialize sending of data
-                *(PS2_ptr) = 0xF4;
-        }
-      }
-
-      // erase message if next is requested
-      *pixel_ctrl_ptr = 1;
-      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-
-      erase_next_level_message(start_message_x, 50);
-      //printf("now! try a more difficult one!\n");
-      
-      g_num_stones += 2;
-      initialize_array(g_num_stones);
-	
-      continue;
-    } else if (check_lose()) {
-      draw_lose_message(start_message_x, 40);
-      *pixel_ctrl_ptr = 1;
-      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-
-      while(input_mux(byte3) != -1){
-        PS2_data = *(PS2_ptr);        // read the Data register in the PS/2 port
-        RVALID   = PS2_data & 0x8000; // extract the RVALID field
-        if (RVALID) {
-            /* shift the next data byte into the display */
-          byte1 = byte2;
-          byte2 = byte3;
-          byte3 = PS2_data & 0xFF;
-
-          if ((byte2 == (char)0xAA) && (byte3 == (char)0x00))
-          // mouse inserted; initialize sending of data
-          *(PS2_ptr) = 0xF4;
-        }
-      }
-
-      // erase message if next is requested
-      *pixel_ctrl_ptr = 1;
-      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
-      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
-
-      erase_lose_message(start_message_x, 40);
-
-      initialize_array(g_num_stones);
-    }
-  }
-
-}
