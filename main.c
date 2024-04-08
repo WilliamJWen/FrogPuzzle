@@ -4936,6 +4936,7 @@ void erase_exit_tut_message(int initial_x, int initial_y);
 void draw_restart_message(int initial_x, int initial_y);
 void draw_enter_tut_message(int initial_x, int initial_y);
 void erase_enter_tut_message(int initial_x, int initial_y);
+void draw_number_mux(int number, int x_offset);
 
 int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
@@ -5261,6 +5262,8 @@ void tutorial_mode() {
       if (g_num_stones == MAX) { // last level for tutorial mode
         //printf("You have nailed it all! \n");
         draw_win_message(start_message_x, 50);
+        draw_exit_tut_message(exit_message_x, exit_message_y);
+
         *pixel_ctrl_ptr = 1;
         wait_for_vsync();  // swap front and back buffers on VGA vertical sync
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
@@ -5667,7 +5670,7 @@ void draw_win_message(int initial_x, int initial_y){
 void draw_exit_tut_message(int initial_x, int initial_y){
   for(int y = 0; y < 10; y++){
     for(int x = 0; x < 150; x++){
-      if(exit_tut[y][x] == 65535) continue;
+      if(exit_tut[y][x] >= 60000) continue;
       plot_pixel(initial_x+x, initial_y+y, exit_tut[y][x]);
     }
   }
@@ -5695,7 +5698,7 @@ void draw_restart_message(int initial_x, int initial_y){
 void draw_enter_tut_message(int initial_x, int initial_y){
   for(int y = 0; y < 12; y++){
     for(int x = 0; x < 160; x++){
-      if(enter_tut[y][x] == 65535) continue;
+      if(enter_tut[y][x] >= 60000) continue;
       plot_pixel(initial_x+x, initial_y+y, enter_tut[y][x]);
     }
   }
