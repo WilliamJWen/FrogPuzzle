@@ -4936,6 +4936,7 @@ void erase_exit_tut_message(int initial_x, int initial_y);
 void draw_restart_message(int initial_x, int initial_y);
 void draw_enter_tut_message(int initial_x, int initial_y);
 void erase_enter_tut_message(int initial_x, int initial_y);
+void draw_number_mux(int number, int x_offset);
 
 int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
