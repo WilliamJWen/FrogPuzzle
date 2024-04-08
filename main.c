@@ -5115,6 +5115,12 @@ int main(void) {
 	  
     //printf("You haved selected %d\n", to_move);
     if (to_move == -1) {  // mistake restart the game
+      step_count = 0;
+      erase_step();
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+      erase_step();
       initialize_array(g_num_stones);
       continue;
     }
@@ -5270,6 +5276,12 @@ void tutorial_mode() {
 	  
     //printf("You haved selected %d\n", to_move);
     if (to_move == -1) {  // mistake restart the game
+      step_count = 0;
+      erase_step();
+      *pixel_ctrl_ptr = 1;
+      wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+      erase_step();
       initialize_array(g_num_stones);
       continue;
     }
@@ -5420,7 +5432,7 @@ void tutorial_mode() {
 
       erase_lose_message(start_message_x, 40);
       erase_step();
-      
+
       initialize_array(g_num_stones);
     }
   } // end of big while for Tutorial mode;
