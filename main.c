@@ -5140,7 +5140,6 @@ int main(void) {
     if (check_win()) {
       step_count = 0;
 
-      erase_step();
       draw_restart_message(start_message_x, 50);
       *pixel_ctrl_ptr = 1;
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
@@ -5181,7 +5180,6 @@ int main(void) {
     } else if (check_lose()) {
       step_count = 0;
 
-      erase_step();
       draw_lose_message(start_message_x, 40);
       draw_enter_tut_message(exit_message_x - 20, exit_message_y);
       *pixel_ctrl_ptr = 1;
@@ -5211,6 +5209,7 @@ int main(void) {
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
 
+      erase_step();
       erase_lose_message(start_message_x, 40);
       erase_enter_tut_message(exit_message_x - 20, exit_message_y);
 
@@ -5295,7 +5294,6 @@ void tutorial_mode() {
 
       if (g_num_stones == MAX) { // last level for tutorial mode
         //printf("You have nailed it all! \n");
-        erase_step();
         draw_win_message(start_message_x, 50);
         draw_exit_tut_message(exit_message_x, exit_message_y);
 
@@ -5329,7 +5327,7 @@ void tutorial_mode() {
       
       // not last level for tutorial mode
       step_count =0;
-      erase_step();
+      
       draw_next_level_message(start_message_x, 50);
       draw_exit_tut_message(exit_message_x, exit_message_y);
 
@@ -5365,6 +5363,7 @@ void tutorial_mode() {
         erase_next_level_message(start_message_x, 50);
         //printf("now! try a more difficult one!\n");
         erase_exit_tut_message(exit_message_x, exit_message_y);
+        erase_step();
 
         g_num_stones += 2;
         initialize_array(g_num_stones);
@@ -5381,6 +5380,7 @@ void tutorial_mode() {
       erase_next_level_message(start_message_x, 50);
       //printf("now! try a more difficult one!\n");
       erase_exit_tut_message(exit_message_x, exit_message_y);
+      erase_step();
       
       g_num_stones += 2;
       initialize_array(g_num_stones);
@@ -5389,7 +5389,6 @@ void tutorial_mode() {
     } else if (check_lose()) {
       step_count = 0;
 
-      erase_step();
       draw_lose_message(start_message_x, 40);
 
       *pixel_ctrl_ptr = 1;
@@ -5420,7 +5419,8 @@ void tutorial_mode() {
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
 
       erase_lose_message(start_message_x, 40);
-
+      erase_step();
+      
       initialize_array(g_num_stones);
     }
   } // end of big while for Tutorial mode;
