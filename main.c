@@ -4944,7 +4944,7 @@ short int Buffer2[240][512];
 
 //***************** Game Logic *****************//
 //******* Named Constants *******//
-const int UNUSED = -1;
+const int UNUSED = -1; 
 const int EMPTY = 0;
 const int LEFT = 1;
 const int RIGHT = 2;
