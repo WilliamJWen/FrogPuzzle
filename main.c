@@ -4895,6 +4895,8 @@ const unsigned short eight[10][10] = { {65535,65535,65535,65535,65535,65535,6553
 //nine
 const unsigned short nine[10][10] = { {65535,65535,65535,65535,65535,65535,65535,65535,65535,65535}, {65535,65535,65535,0,0,16904,65535,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,4226,0,0,0,0,65535,65535,65535}, {65535,65535,65535,65535,65535,65535,0,65535,65535,65535}, {65535,65535,65535,65535,65535,12678,4226,65535,65535,65535}, {65535,65535,16904,0,0,4226,65535,65535,65535,65535}, {65535,65535,65535,65535,65535,65535,65535,65535,65535,65535}, {65535,65535,65535,65535,65535,65535,65535,65535,65535,65535}, };
 
+//zero
+const unsigned short zero[10][10] = { {65535,65535,65535,65535,65535,65535,65535,65535,65535,65535}, {65535,65535,0,0,0,0,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,65535,65535,65535,0,65535,65535,65535}, {65535,65535,0,0,0,0,0,65535,65535,65535}, {65535,65535,65535,65535,65535,65535,65535,65535,65535,65535}, };
 
 // ***** Frog Jump Audio Resources *****//
 // Sound from https://www.zapsplat.com/ 
@@ -4938,7 +4940,12 @@ void erase_exit_tut_message(int initial_x, int initial_y);
 void draw_restart_message(int initial_x, int initial_y);
 void draw_enter_tut_message(int initial_x, int initial_y);
 void erase_enter_tut_message(int initial_x, int initial_y);
-void draw_number_mux(int number, int x_offset);
+
+void draw_number(const unsigned short number_array[10][10], int initial_x, int initial_y);
+void draw_number_mux(int number, int initial_x, int initial_y);
+
+void draw_steps(int step_count, volatile int * pixel_ctrl_ptr);
+void erase_step();
 
 int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
@@ -4967,6 +4974,9 @@ int exit_message_y = 10;
 
 int number_initial_x = 21;
 int number_initial_y = 180;
+
+int step_initial_x = 10;
+int step_initial_y = 10;
 
 int frog_x[MAX];
 int frog_y[MAX];
@@ -5077,6 +5087,8 @@ int main(void) {
   
   erase_start_message(start_message_x, start_message_y);
 
+   int step_count = 0;
+
    while (1) {
     print_game_state();
     //int to_move = get_input();
@@ -5112,6 +5124,10 @@ int main(void) {
     if (move == 0) {
       continue;  // don't make a change
     } else {
+      step_count++;
+
+      draw_steps(step_count, pixel_ctrl_ptr);
+      
       make_move(to_move, move, pixel_ctrl_ptr);
       print_game_state();
       // need tuning
@@ -5122,7 +5138,9 @@ int main(void) {
     }
     
     if (check_win()) {
+      step_count = 0;
 
+      erase_step();
       draw_restart_message(start_message_x, 50);
       *pixel_ctrl_ptr = 1;
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
@@ -5147,10 +5165,12 @@ int main(void) {
       }
 
       // erase message if next is requested
+      erase_step();
       *pixel_ctrl_ptr = 1;
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
 
+      erase_step();
       erase_next_level_message(start_message_x, 50);
       //printf("now! try a more difficult one!\n");
       
@@ -5159,6 +5179,9 @@ int main(void) {
       continue;
 
     } else if (check_lose()) {
+      step_count = 0;
+
+      erase_step();
       draw_lose_message(start_message_x, 40);
       draw_enter_tut_message(exit_message_x - 20, exit_message_y);
       *pixel_ctrl_ptr = 1;
@@ -5183,6 +5206,7 @@ int main(void) {
       }
 
       // erase message if next is requested
+      erase_step();
       *pixel_ctrl_ptr = 1;
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
@@ -5218,6 +5242,7 @@ void tutorial_mode() {
   g_num_stones = 5;
   clear_array();
   initialize_array(5);
+  int step_count = 0;
 
   while (1) {
     
@@ -5254,6 +5279,9 @@ void tutorial_mode() {
     if (move == 0) {
       continue;  // don't make a change
     } else {
+      step_count++;
+
+      draw_steps(step_count, pixel_ctrl_ptr);
       make_move(to_move, move, pixel_ctrl_ptr);
       print_game_state();
       // need tuning
@@ -5267,6 +5295,7 @@ void tutorial_mode() {
 
       if (g_num_stones == MAX) { // last level for tutorial mode
         //printf("You have nailed it all! \n");
+        erase_step();
         draw_win_message(start_message_x, 50);
         draw_exit_tut_message(exit_message_x, exit_message_y);
 
@@ -5299,7 +5328,8 @@ void tutorial_mode() {
       }
       
       // not last level for tutorial mode
-
+      step_count =0;
+      erase_step();
       draw_next_level_message(start_message_x, 50);
       draw_exit_tut_message(exit_message_x, exit_message_y);
 
@@ -5327,6 +5357,7 @@ void tutorial_mode() {
       
       if (input_mux(byte3) == NEXT) {
         // erase message if next is requested
+        erase_step();
         *pixel_ctrl_ptr = 1;
         wait_for_vsync();  // swap front and back buffers on VGA vertical sync
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
@@ -5356,6 +5387,9 @@ void tutorial_mode() {
 	
       continue;
     } else if (check_lose()) {
+      step_count = 0;
+
+      erase_step();
       draw_lose_message(start_message_x, 40);
 
       *pixel_ctrl_ptr = 1;
@@ -5380,6 +5414,7 @@ void tutorial_mode() {
       }
 
       // erase message if next is requested
+      erase_step();
       *pixel_ctrl_ptr = 1;
       wait_for_vsync();  // swap front and back buffers on VGA vertical sync
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
@@ -5739,13 +5774,13 @@ void draw_frog_docks_level(int num_stone){
   int count = 1;
   for(int  i = (MAX-num_stone)/2; i < MAX-(MAX-num_stone)/2; i++){
     draw_frog_docks(initial_rock_x + i * SPACING, initial_rock_y);
-    draw_number_mux(count, i  * SPACING);
+    draw_number_mux(count, number_initial_x + i * SPACING, number_initial_y);
     count++;
   }
 }
 
 //***** Draw Numbers *****//
-void draw_number(const unsigned short number_array[10][10], int x_offset){
+void draw_number(const unsigned short number_array[10][10], int initial_x, int initial_y){
   for(int y = 0; y < 10; y++){
     for(int x = 0; x < 10; x++){
       int pixel_color = number_array[y][x];
@@ -5754,21 +5789,50 @@ void draw_number(const unsigned short number_array[10][10], int x_offset){
       }else{
         pixel_color = 33840;
       }
-      plot_pixel(number_initial_x + x + x_offset, number_initial_y + y, pixel_color);
+      plot_pixel(initial_x+ x, initial_y + y, pixel_color);
     }
   }
 }
 
-void draw_number_mux(int number, int x_offset){
-  if(number == 1) draw_number(one, x_offset);
-  if(number == 2) draw_number(two, x_offset);
-  if(number == 3) draw_number(three, x_offset);
-  if(number == 4) draw_number(four, x_offset);
-  if(number == 5) draw_number(five, x_offset);
-  if(number == 6) draw_number(six, x_offset);
-  if(number == 7) draw_number(seven, x_offset);
-  if(number == 8) draw_number(eight, x_offset);
-  if(number == 9) draw_number(nine, x_offset);
+void draw_number_mux(int number, int initial_x, int initial_y){
+  if(number == 1) draw_number(one, initial_x, initial_y);
+  if(number == 2) draw_number(two, initial_x, initial_y);
+  if(number == 3) draw_number(three, initial_x, initial_y);
+  if(number == 4) draw_number(four, initial_x, initial_y);
+  if(number == 5) draw_number(five, initial_x, initial_y);
+  if(number == 6) draw_number(six, initial_x, initial_y);
+  if(number == 7) draw_number(seven, initial_x, initial_y);
+  if(number == 8) draw_number(eight, initial_x, initial_y);
+  if(number == 9) draw_number(nine, initial_x, initial_y);
+  if(number == 0) draw_number(zero, initial_x, initial_y);
+}
+
+void erase_step(){
+  for (int y=25; y>=0;y--) {
+		for (int x=0;x<25;x++){
+      int x_bg = x;	 
+      int y_bg = y;		
+		plot_pixel(x_bg, y_bg, bg[x_bg+y_bg*320]);
+	}
+  }
+}
+
+void draw_steps(int step_count, volatile int * pixel_ctrl_ptr){
+  for(int i = 0; i < 2; i++){
+    erase_step();
+
+    if(step_count <= 9){
+      draw_number_mux(step_count, step_initial_x, step_initial_y);
+    }else{
+      int first_digit = (step_count) / 10;
+      int second_digit = step_count % 10;
+      draw_number_mux(first_digit, step_initial_x, step_initial_y);
+      draw_number_mux(second_digit, step_initial_x + 6, step_initial_y);
+    }
+    *pixel_ctrl_ptr = 1;
+    wait_for_vsync();  // swap front and back buffers on VGA vertical sync
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // new back buffer
+  }
 }
 
 //***** Draw Frogs *****//
