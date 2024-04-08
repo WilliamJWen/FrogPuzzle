@@ -1,4 +1,7 @@
-# How to operate our project
+# Project Frog Puzzle
+Jiahan William Wen 1007956650 <br>
+Kexin (Alissa) Xiang 1008140094 <br>
+## How to operate our project
 
 1. Open FrogPuzzle.c in CPULator or Intel Monitor Program
     - Our project is combined into a single C file: FrogPuzzle.c
@@ -21,7 +24,7 @@
          - Level 1 ![image](https://github.com/WilliamJWen/FrogPuzzle/assets/103137385/23b63573-afa4-4db0-a536-e2574f223363) Level 3 ![image](https://github.com/WilliamJWen/FrogPuzzle/assets/103137385/56a129f6-a099-44db-87ee-0fd868eab0b4)
          - Player can go back to Play Mode by clicking Q after beating any level of Tutorial mode
 
-# Attribution Table 
+## Attribution Table 
 | Jiahan William Wen:      | Kexin (Alissa) Xiang:  |
 |-----------|-------------|
 | <ul><li>Build Game Logic in C using terminal I/O </li> <li> Convert .png to C array and draw Background</li>  <li>Handle PS2 Keyboard (clear FIFO buffer) </li> <li>Convert .mp3 to C array and implemented Audio</li> </ul> |  <ul><li>Draw static frog and labeled stones </li> <li>Restructured to Double Buffering </li><li>Frog Jump Animation</li> <li>Display Messages for each game state</li> <li>Display move counts for each move</li> </ul>   |
