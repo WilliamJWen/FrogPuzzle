@@ -4957,6 +4957,7 @@ const int UNUSED = -1;
 const int EMPTY = 0;
 const int LEFT = 1;
 const int RIGHT = 2;
+int step_count = 0;
 
 //******* Global Variables *******//
 int array[MAX] = {0};
@@ -5086,8 +5087,6 @@ int main(void) {
   }
   
   erase_start_message(start_message_x, start_message_y);
-
-   int step_count = 0;
 
    while (1) {
     print_game_state();
